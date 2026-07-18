@@ -90,7 +90,6 @@ public class TaskService : ITaskService
         var task = await _unitOfWork.Tasks.GetByIdAsync(id);
         if (task == null) throw new KeyNotFoundException("Task not found.");
 
-        // Business Rule: Only Admins can delete tasks (أو حسب ما تحدد، خليناها Admin هنا كمثال)
         if (currentUserRole != UserRole.Admin.ToString())
         {
             throw new UnauthorizedAccessException("Only Admins can delete tasks.");
@@ -100,7 +99,6 @@ public class TaskService : ITaskService
         await _unitOfWork.CompleteAsync();
     }
 
-    // دالة مساعدة (Helper Method) لتقليل تكرار الكود
     private TaskResponseDto MapToDto(TaskItem task)
     {
         return new TaskResponseDto

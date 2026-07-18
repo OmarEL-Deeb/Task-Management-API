@@ -24,20 +24,17 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto model)
     {
-        // 1. التأكد إن الإيميل مش موجود قبل كدا
         var existingUser = await _unitOfWork.Users.GetByEmailAsync(model.Email);
         if (existingUser != null)
         {
             return new AuthResponseDto { Message = "Email is already registered!" };
         }
 
-        // 2. التأكد من صحة الـ Role
         if (!Enum.TryParse(model.Role, true, out UserRole userRole))
         {
             return new AuthResponseDto { Message = "Invalid Role." };
         }
 
-        // 3. إنشاء المستخدم وتشفير الباسورد
         var user = new User
         {
             Name = model.Name,
@@ -58,16 +55,13 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto model)
     {
-        // 1. البحث عن المستخدم
         var user = await _unitOfWork.Users.GetByEmailAsync(model.Email);
 
-        // 2. التأكد من المستخدم وصحة الباسورد
         if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
         {
             return new AuthResponseDto { Message = "Invalid Email or Password." };
         }
 
-        // 3. إنشاء التوكن
         var token = GenerateJwtToken(user);
 
         return new AuthResponseDto
@@ -90,7 +84,7 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
-            new Claim("uid", user.Id.ToString()) // هنستخدمه لاحقاً عشان نعرف الـ ID بتاع اللي عامل Login
+            new Claim("uid", user.Id.ToString()) 
         };
 
         var token = new JwtSecurityToken(

@@ -16,7 +16,6 @@ public class TaskRepository : GenericRepository<TaskItem>, ITaskRepository
     {
         var query = _dbSet.AsQueryable();
 
-        // 1. تطبيق الفلترة
         if (!string.IsNullOrWhiteSpace(parameters.Status) && Enum.TryParse(typeof(Domain.Enums.TaskStatus), parameters.Status, true, out var status))
         {
             query = query.Where(t => t.Status == (Domain.Enums.TaskStatus)status);
@@ -32,10 +31,8 @@ public class TaskRepository : GenericRepository<TaskItem>, ITaskRepository
             query = query.Where(t => t.AssignedToId == parameters.AssignedToId.Value);
         }
 
-        // 2. حساب العدد الكلي قبل الـ Pagination
         var totalCount = await query.CountAsync();
 
-        // 3. تطبيق التقسيم (Pagination)
         var tasks = await query
             .Skip((parameters.PageNumber - 1) * parameters.PageSize)
             .Take(parameters.PageSize)

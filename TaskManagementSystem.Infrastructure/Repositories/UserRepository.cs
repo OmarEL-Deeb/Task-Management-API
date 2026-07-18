@@ -13,7 +13,6 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        // بنستخدم SingleOrDefaultAsync عشان نتأكد إن الإيميل مش متكرر
         return await _dbSet.SingleOrDefaultAsync(u => u.Email == email);
     }
 }

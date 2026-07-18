@@ -12,7 +12,6 @@ public class TaskParameters
         set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
     }
 
-    // خصائص الفلترة
     public string? Status { get; set; }
     public string? Priority { get; set; }
     public int? AssignedToId { get; set; }
